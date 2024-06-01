@@ -48,6 +48,7 @@
 2. 变址寄存器
    1. **SI**(Source Index), used for copying strings, segment register varies
    2. **DI**(Destination Index), used for destination for copying strings
+   3. **[注意]SI**和**DI***不能够*分成两个8位寄存器来使用
 3. 指针寄存器
    1. **SP**(Stack Pointer), offset from SS register as to the location of the stack's top
    2. **BP**(Base Pointer), offset from SS register to locate variables on the stack
@@ -293,9 +294,53 @@ db（define byte）
 
 dd（define double word）
 
-
 ## 处理字符
 
+> 汇编程序中，用'.....'的方式指明数据是以字符的形式给出的
+>
+> db 'unIX'
+
+## [bx+idata]的含义
+
+> mov ax, [200+bx]
+>
+> mov ax, [bx+200]
+>
+> mov ax, 200[bx]
+>
+> mov ax, [bx].200
+>
+> 上述四种写法意思相同
+
+
+
+## [bx+si]
+
+> mov ax, [bx+si]
+>
+> mov ax, [bx][si]
+>
+> 上述两种写法意思相同
+
+
+## [bx+si+idata]
+
+> mov ax, [bx+200+si]
+>
+> mov ax,[200+bx+si]
+>
+> mov, ax,200[bx][si]
+
+
+## 内存寻址方式
+
+|     形式     |       名称       | 示例                            |
+| :-----------: | :--------------: | ------------------------------- |
+|    [idata]    |     直接寻址     | mov ax, [200]                   |
+|     [bx]     |  寄存器间接寻址  | mov bx, 0<br />mov ax, [bx]     |
+|  [bx+idata]  |  寄存器相对寻址  | mov bx, 4<br />mov ax, [bx+200] |
+|    [bx+si]    |   基址变址寻址   | mov ax, [bx+si]                 |
+| [bx+si+idata] | 相对基址变址寻址 | mov ax, [bx+si+200]             |
 
 
 
