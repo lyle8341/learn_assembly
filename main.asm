@@ -1,6 +1,6 @@
 ; codesg_custom 段名
 ; assume 假设某一段寄存器和程序中的某一个用segment...ends定义的段相关联
-ASSUME CS:codesg_custom            ;伪指令，编译器根据伪指令来进行相关的编译工作
+assume CS:codesg_custom            ;伪指令，编译器根据伪指令来进行相关的编译工作
 codesg_custom SEGMENT              ;伪指令
                   MOV ax, 0123H
                   MOV bx, 0456H

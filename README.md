@@ -283,4 +283,22 @@ POP		出栈
    1. 不为0则转至标号处执行程序
    2. 如果为0则向下执行
 
+## 定义字型数据
+
+dw（define word）
+
+> dw 0123H, 0456H
+
+db（define byte）
+
+dd（define double word）
+
+
+## 处理字符
+
+
+
+
+
+
 ## [错误汇编指令集](ERROR_COMMAND.md "错误汇编指令集")

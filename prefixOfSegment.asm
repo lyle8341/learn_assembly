@@ -1,7 +1,7 @@
 ;有问题：下面写法在debug调试没有问题。通过汇编代码编译则会出问题
 ;结论: 常量作为偏移地址时，前面需要加上段寄存器 如： mov al, ds:[0]
 
-ASSUME cs:codesg_custom
+assume cs:codesg_custom
 codesg_custom SEGMENT
                   mov ax, 2000h
                   mov ds, ax
