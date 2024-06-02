@@ -51,7 +51,7 @@
    3. **[注意]SI**和**DI***不能够*分成两个8位寄存器来使用
 3. 指针寄存器
    1. **SP**(Stack Pointer), offset from SS register as to the location of the stack's top
-   2. **BP**(Base Pointer), offset from SS register to locate variables on the stack
+   2. **BP**(Base Pointer), offset from **SS register** to locate variables on the stack
 4. 指令指针寄存器
    1. **IP**(Instruction Pointer), offset from the CS for the next instrunction to excute
 5. 段寄存器
@@ -98,9 +98,14 @@ add ax, bx	AX = AX + BX
 
 **D 段地址:偏移地址 结尾偏移**		列出内存中指定地址范围内的内容（显示 ***结尾偏移*** + 1 个）
 
+***注意：结束地址要大于起始地址，否则就会报错***
+
+![img](images/debug_d_error.png)
+
 ---
 
-**E 段地址:偏移地址 数据1 数据2 ...**	改变内存中的内容
+**E 段地址:偏移地址 数据1 数据2 ...**
+    改变内存中的内容
 
 **E 段地址:偏移地址**
 
@@ -312,8 +317,6 @@ dd（define double word）
 >
 > 上述四种写法意思相同
 
-
-
 ## [bx+si]
 
 > mov ax, [bx+si]
@@ -322,7 +325,6 @@ dd（define double word）
 >
 > 上述两种写法意思相同
 
-
 ## [bx+si+idata]
 
 > mov ax, [bx+200+si]
@@ -330,7 +332,8 @@ dd（define double word）
 > mov ax,[200+bx+si]
 >
 > mov, ax,200[bx][si]
-
+>
+> ***为结构化数据的处理提供了方便***
 
 ## 内存寻址方式
 
@@ -341,6 +344,123 @@ dd（define double word）
 |  [bx+idata]  |  寄存器相对寻址  | mov bx, 4<br />mov ax, [bx+200] |
 |    [bx+si]    |   基址变址寻址   | mov ax, [bx+si]                 |
 | [bx+si+idata] | 相对基址变址寻址 | mov ax, [bx+si+200]             |
+
+### 那些寄存器用于寻址
+
+> **BX、SI、DI、BP**
+
+> 正确的指令
+>
+> mov ax, [bx]
+>
+> mov ax, [bx+si]
+>
+> mov ax, [bx+di]
+>
+> mov ax, [bp]
+>
+> mov ax, [bp+si]
+>
+> mov ax, [bp+di]
+>
+> **备注：只有BX、BP、SI、DI可以用在[...]对内存单元寻址**
+
+### BX、BP区别
+
+> bx默认指 DS 段
+>
+> bp默认指 SS 段
+
+### 汇编中数据位置的表单
+
+1. 立即数（直接包含在机器指令中的数据）
+
+   ```
+   mov ax,1
+   add bx, 2000h
+   or bx, 00010000b
+   mov al, 'a'
+   ```
+2. 寄存器
+3. 内存（段地址())和偏移地址(EA)）
+
+### 指令要处理的数据有多长
+
+1. 字word操作
+2. 字节byte操作
+3. 用word ptr或byte ptr指明
+   1. mov word ptr ds:[0], 1
+   2. inc word ptr [bx]
+   3. inc word ptr ds:[0]
+   4. add word ptr [bx], 2
+   5. mov byte ptr ds:[0], 1
+   6. inc byte ptr [bx]
+   7. inc byte ptr ds:[0]
+   8. add byte ptr [bx], 2
+
+
+## div指令
+
+指令格式：
+
+> div 寄存器
+
+> div 内存单元
+
+| 被除数 | AX              | DX和AX           |
+| ------ | --------------- | ---------------- |
+| 除数   | 8位内存或寄存器 | 16位内存或寄存器 |
+| 商     | AL              | AX               |
+| 余数   | AH              | DX               |
+
+
+## dup功能和用法
+
+> dup和db、dw、dd等数据定义伪指令配合使用，用来进行数据的重复
+
+| 指令                  | 功能                                     | 相当于                  |
+| --------------------- | ---------------------------------------- | ----------------------- |
+| db 3 dup(0)           | 定义了3个字节，它们的值都是0             | db 0,0,0                |
+| db 3 dup(0,1,2)       | 定义了9个字节，由0，1，2重复三次         | db 0,1,2,0,1,2,0,1,2    |
+| db 3 dup('abc','ABC') | 定义了18个字节，构成'abcABCabcABCabcABC' | db 'abcABCabcABCabcABC' |
+
+格式如下：
+
+> db 重复的次数 dup(重复的字节型数据)
+>
+> dw 重复的次数 dup(重复的字型数据)
+>
+> dd 重复的次数 dup(重复的双字数据)
+
+
+
+## 流程转移与子程序
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
