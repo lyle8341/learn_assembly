@@ -495,7 +495,6 @@ dd（define double word）
 
 > 段内近转移
 
-
 #### 转移地址在内存中的jmp
 
 > 段内转移	jmp word ptr 内存单元地址
@@ -530,7 +529,6 @@ dd（define double word）
 >
 > CS:IP指向0000:0123
 
-
 ### jcxz
 
 > jcxz 标号
@@ -542,7 +540,6 @@ dd（define double word）
 > 短转移，对IP的修改范围为-128~127
 >
 > 对应的机器码中包含转移的位移
-
 
 ## 模块化程序设计
 
@@ -616,7 +613,6 @@ call dword ptr ds:[0]
 执行后，（CS）=0，（IP）=0123H， （SP）=0CH
 ```
 
-
 ### 返回指令 ret和retf
 
 |        | ret                                  | retf                                           |
@@ -626,7 +622,152 @@ call dword ptr ds:[0]
 
 
 
+## 乘法 mul
+
+|                | 8位乘法                                                                                   | 16位乘法                                                                                                                       |
+| -------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 被乘数（默认） | **AL**                                                                              | **AX**                                                                                                                   |
+| 乘数           | 8位寄存器或内存字节单元                                                                   | 16位寄存器或内存字单元                                                                                                         |
+| 结果           | **AX**                                                                              | **DX**（高位）和**AX**（低位）                                                                                     |
+| 例子           | mul bl<br />-- (ax)=(al)*(bl)<br /><br />mul byte ptr ds:[0]<br />--(ax)=(al)*((ds)*16+0) | mul word ptr [bx+si+8]<br />-- (ax)=(ax)*((ds)*16+(bx)+(si)+8)结果的低16位;<br />(dx)=(ax)*((ds)*16+(bx)+(si)+8)结果的高16位； |
+|                | 计算100*10<br />mov al, 100<br />mov bl, 10<br />mul bl<br />结果：(ax)=1000(03E8H)       | 计算100*10000<br />mov ax, 100<br />mov bx, 10000<br />mul bx<br />结果: (dx)=000FH, (ax)=4240H; 即：F4240H                    |
+
+
+## 寄存器冲突
+
+> 在子程序开始前，将要用到的寄存器中的内容都保存起来，在子程序返回前再恢复
+
+
+## 标志寄存器
+
+![标志寄存器](images/flag_register.jpg "标志寄存器")
+
+
+[参考地址](https://thestarman.pcministry.com/asm/debug/8086REGs.htm)
+
+> TF Trap Flag - not shown in MS-DEBUG)
+
+<pre><b>          FLAGS            SET (a 1-bit)   CLEARed (a 0-bit)
+ ---------------          --------------- -------------------
+       Overflow   of  =    OV (OVerflow)   NV [No oVerflow]
+
+      Direction   df  =    DN (decrement)  UP (increment)
+
+      Interrupt   if  =    EI  (enabled)   DI (disabled)
+
+           Sign   sf  =    NG (negative)   PL (positive)
+
+           Zero   zf  =    ZR   [zero]     NZ  [ Not zero]
+
+Auxiliary Carry   af  =    AC              NA  [ No AC ]
+
+         Parity   pf  =    PE  (even)      PO  (odd)
+
+          Carry   cf  =    CY  [Carry]     NC  [ No Carry]</b></pre>
+
+
+<pre><b>The individual abbreviations appear to have these meanings:
+
+OV = OVerflow, NV = No oVerflow.    DN = DowN,  UP (up).
+EI = Enable Interupt, DI = Disable Interupt.
+
+NG = NeGative, PL = PLus; a strange mixing of terms due to the
+     fact that 'Odd Parity' is represented by PO (so it can't
+     be as POsitive here), but they still could have used 'MI'
+     and for the word, MInus; instead of 'NeGative'.
+
+ZR = ZeRo,  NZ = Not Zero.
+AC = Auxiliary Carry, NA = Not Auxiliary carry.
+PE = Parity Even, PO = Parity Odd.  CY = CarrY, NC = No Carry.</b></pre>
 
 
 
-## [错误汇编指令集](ERROR_COMMAND.md "错误汇编指令集")
+<pre><b>      of df if tf sf zf    af    pf    cf
+      ----------------------------------- 
+           Symbols used by MS-DEBUG
+      -----------------------------------
+      OV DN EI    NG ZR    AC    PE    CY  ---> When bit = 1
+      NV UP DI    PL NZ    NA    PO    NC  ---> When bit = 0
+
+     |xx|xx|xx|<font color="red">--</font>|xx|xx| <font color="red">0</font>|xx| <font color="red">0</font>|xx| <font color="red">1</font>|xx|    Newer Designations:
+Bits: <font color="#008000">11 10  9  8  7  6  5  4  3  2  1  0</font>
+       |  |  |  |  |  |  |  |  |  |  |  '---  <font color="blue">CF - Carry</font> Flag
+       |  |  |  |  |  |  |  |  |  |  '---  <font color="red">is always a 1</font>
+       |  |  |  |  |  |  |  |  |  '---  <font color="blue">PF - Parity</font> Flag
+       |  |  |  |  |  |  |  |  '---  <font color="red">is always a 0</font>
+       |  |  |  |  |  |  |  '---  <font color="blue">AF - Auxiliary</font> (Carry) Flag
+       |  |  |  |  |  |  '---  <font color="red">is always a 0</font>
+       |  |  |  |  |  '---  <font color="blue">ZF - Zero</font> Flag
+       |  |  |  |  '---  <font color="blue">SF - Sign</font> Flag
+       |  |  |  '---  (<font color="red">TF Trap Flag - not shown in</font> MS-DEBUG)
+       |  |  '---  <font color="blue">IF - Interrupt</font> Flag
+       |  '---  <font color="blue">DF - Direction</font> Flag
+       '---  <font color="blue">OF - Overflow</font> Flag</b></pre>
+
+### ZF
+
+> 标记相关指令的计算**结果是否为0**
+
+### PF
+
+> 记录指令执行后，结果的所有**二进制位中1的个数**
+
+### SF
+
+> 记录指令执行后，将结果视为**有符号数（正负）**
+>
+> SF标志是CPU对有符合数运算结果的一种记录。将数据当作有符合数来运算的时候，通过SF可知结果的正负；将数据当作无符号数来运算，SF的值则没有意义，虽然相关的指令影响了它的值
+
+### CF
+
+> 在进行无符号数运算的时候，CF记录了运算结果的**最高有效位**向**更高位**(假想的)进位值，或从更高位的借位值
+
+### OF
+
+> 在进行有符号数运算的时候，如结果超过了机器所能表示的范围称为**溢出**
+
+
+## adc带进位加法
+
+| 指令 | mov al, 98H<br />add al, al<br />adc al, 3 | mov ax, 1<br />add ax, ax<br />adc ax, 3 | mov ax, 2<br />mov bx, 1<br />sub bx, ax<br />adc ax, 1 |
+| ---- | :----------------------------------------- | :--------------------------------------- | ------------------------------------------------------- |
+| 结果 | (ax)=34H                                   | (ax)=5                                   |                                                         |
+| 解释 | adc执行时，<br />(ax)+3+CF=30H+3+1=34H     | adc执行时，<br />(ax)+3+CF=2+3+0=5       |                                                         |
+
+
+
+> ***inc指令不会产生进位***
+
+
+## sbb带借位减法指令
+
+> eg: sbb ax, bx
+>
+> (ax)=(ax)-(bx)-CF
+
+
+
+## 缩写简介
+
+> pushf（push flags）、popf（pop flags）、xchg（exchange）
+>
+> shl（shift logic left）、shr（shift logic right）、sal（shift arithmetic left）、sar（shift arithmetic right）、rol（rotate left）、ror（rotate right）、rcl（rotate left through carry）、rcr（rotate right through carry）
+>
+> cld（clear direction）、std（set direction）、cli（clear interrupt）、sti（set interrupt）、nop（no operation）、clc（clear carry）、cmc（carry make change）、stc（set carry）、hlt（halt）、wait、esc（escape）
+>
+> sub（substract）、adc（add with carry）、sbb（substract with borrow）、inc（increase）、dec（decrease）、cmp（compare）、imul（integer multiplication）、idiv（integer divide）、aaa（ASCII add with adjust）
+>
+> xor（exclusive or）
+>
+> mov（move）
+>
+> int（interrupt）、iret（interrupt return）
+>
+> jmp（jump）
+>
+> jcxz（jump if CX is zero）、je（jump if equal）、jb（jump if below）、ja（jump if above）、jnb（jump if not below）、jna（jump if not above）
+>
+> retf（return far）
+
+
+[错误汇编指令集](ERROR_COMMAND.md "错误汇编指令集")
