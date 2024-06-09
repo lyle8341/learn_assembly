@@ -620,8 +620,6 @@ call dword ptr ds:[0]
 | 功能   | 用栈中的数据修改IP的内容，实现近转移 | 用栈中的数据，修改CS和IP的内容，从而实现远转移 |
 | 相当于 | pop IP                               | pop IP<br />pop CS                             |
 
-
-
 ## 乘法 mul
 
 |                | 8位乘法                                                                                   | 16位乘法                                                                                                                       |
@@ -632,16 +630,13 @@ call dword ptr ds:[0]
 | 例子           | mul bl<br />-- (ax)=(al)*(bl)<br /><br />mul byte ptr ds:[0]<br />--(ax)=(al)*((ds)*16+0) | mul word ptr [bx+si+8]<br />-- (ax)=(ax)*((ds)*16+(bx)+(si)+8)结果的低16位;<br />(dx)=(ax)*((ds)*16+(bx)+(si)+8)结果的高16位； |
 |                | 计算100*10<br />mov al, 100<br />mov bl, 10<br />mul bl<br />结果：(ax)=1000(03E8H)       | 计算100*10000<br />mov ax, 100<br />mov bx, 10000<br />mul bx<br />结果: (dx)=000FH, (ax)=4240H; 即：F4240H                    |
 
-
 ## 寄存器冲突
 
 > 在子程序开始前，将要用到的寄存器中的内容都保存起来，在子程序返回前再恢复
 
-
 ## 标志寄存器
 
 ![标志寄存器](images/flag_register.jpg "标志寄存器")
-
 
 [参考地址](https://thestarman.pcministry.com/asm/debug/8086REGs.htm)
 
@@ -665,7 +660,6 @@ Auxiliary Carry   af  =    AC              NA  [ No AC ]
 
           Carry   cf  =    CY  [Carry]     NC  [ No Carry]</b></pre>
 
-
 <pre><b>The individual abbreviations appear to have these meanings:
 
 OV = OVerflow, NV = No oVerflow.    DN = DowN,  UP (up).
@@ -679,8 +673,6 @@ NG = NeGative, PL = PLus; a strange mixing of terms due to the
 ZR = ZeRo,  NZ = Not Zero.
 AC = Auxiliary Carry, NA = Not Auxiliary carry.
 PE = Parity Even, PO = Parity Odd.  CY = CarrY, NC = No Carry.</b></pre>
-
-
 
 <pre><b>      of df if tf sf zf    af    pf    cf
       ----------------------------------- 
@@ -726,7 +718,6 @@ Bits: <font color="#008000">11 10  9  8  7  6  5  4  3  2  1  0</font>
 
 > 在进行有符号数运算的时候，如结果超过了机器所能表示的范围称为**溢出**
 
-
 ## adc带进位加法
 
 | 指令 | mov al, 98H<br />add al, al<br />adc al, 3 | mov ax, 1<br />add ax, ax<br />adc ax, 3 | mov ax, 2<br />mov bx, 1<br />sub bx, ax<br />adc ax, 1 |
@@ -734,10 +725,7 @@ Bits: <font color="#008000">11 10  9  8  7  6  5  4  3  2  1  0</font>
 | 结果 | (ax)=34H                                   | (ax)=5                                   |                                                         |
 | 解释 | adc执行时，<br />(ax)+3+CF=30H+3+1=34H     | adc执行时，<br />(ax)+3+CF=2+3+0=5       |                                                         |
 
-
-
 > ***inc指令不会产生进位***
-
 
 ## sbb带借位减法指令
 
@@ -745,7 +733,74 @@ Bits: <font color="#008000">11 10  9  8  7  6  5  4  3  2  1  0</font>
 >
 > (ax)=(ax)-(bx)-CF
 
+## cmp指令
 
+命令格式：
+
+* cmp operand1 operand2
+* 功能相当于减法指令，只是不保存结果
+* cmp执行后，将对标志寄存器产生影响
+
+## 条件转移指令
+
+> 转移 = 修改IP
+
+## DF标志和串传送指令
+
+> 在串处理指令中，控制每次操作后si,di的递减。
+>
+> DF=0: 每次操作后 si, di递增
+>
+> DF=1: 每次操作后 si, di递减
+
+### 串传送指令
+
+> movsb(move string byte)
+>
+> 功能: 以字节为单位传送
+>
+> * ((**es**) * 16 +(di))=((**ds**) * 16 + (si))
+> * 如果DF=0
+>   * (si)=(si)+1
+>   * (di)=(di)+1
+> * 如果DF=1
+>   * (si)=(si)-1
+>   * (di)=(di)-1
+
+> movsw(mov string word)
+>
+> 功能：以字为单位传送
+>
+> * ((**es**) * 16 +(di))=((**ds**) * 16 + (si))
+> * 如果DF=0
+>   * (si)=(si)+2
+>   * (di)=(di)+2
+> * 如果DF=1
+>   * (si)=(si)-2
+>   * (di)=(di)-2
+
+## rep指令
+
+> 常和串传送指令搭配使用
+>
+> 功能：根据 **cx** 的值，重复执行后面的指令
+>
+> 用法： rep movsb
+
+## 移位
+
+### shl
+
+> mov al, 01010001b
+>
+> mov cl, 3
+>
+> shl al, cl   移动位数大于1时，必须用cl
+
+## 显存
+
+| <br /> |  |  |
+| ------ | - | - |
 
 ## 缩写简介
 
@@ -768,6 +823,5 @@ Bits: <font color="#008000">11 10  9  8  7  6  5  4  3  2  1  0</font>
 > jcxz（jump if CX is zero）、je（jump if equal）、jb（jump if below）、ja（jump if above）、jnb（jump if not below）、jna（jump if not above）
 >
 > retf（return far）
-
 
 [错误汇编指令集](ERROR_COMMAND.md "错误汇编指令集")
