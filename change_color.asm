@@ -15,17 +15,19 @@ code segment
             mov   sp, 128                           ;
             mov   ax, data
             mov   ds, ax
-
+    
     ;改中断例程入口地址
             mov   ax, 0
             mov   es,ax
     ;存储原中断例程的IP
             push  es:[9*4]
             pop   ds:[0]
+    ;  mov   ds:[0], es:[9*4] 这种写法是错误的（Improper operand type）
     ;存储原中断例程的CS
             push  es:[9*4+2]
             pop   ds:[2]
-
+    ; mov   ds:[2], es:[9*4+2] 这种写法是错误的（Improper operand type）
+    ;改中断例程入口地址
             mov   word ptr es:[9*4], offset int9
             mov   es:[9*4+2], cs
 
