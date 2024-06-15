@@ -983,6 +983,45 @@ data ends
 > 语Load effective address——取有效地址，也就是取偏移地址
 
 
+## 程序多文件组织
+
+> 1. masm depend/main;  编译
+> 2. masm depend/sub; 编译
+> 3. link main+sub;
+
+
+## 汇编过程
+
+> 1. myfile.asm源文件
+> 2. 汇编程序
+>    1. 列表文件 myfile.lst
+>       1. 将源程序、目标程序、错误信息列表列出来，供检查程序用
+>    2. 交叉文件 myfile.crf
+>       1. 包含标识符（段名，过程名，变量名，标号）在源程序中定义的位置和被引用的位置，对源程序所用的各种符号进行前后对照的文件
+>    3. 目标文件 myfile.obj
+> 3. 连接程序
+>    1. 映像文件 myfile.map
+>    2. myfile.exe
+
+
+
+## 宏
+
+> 必须先定义后调用
+
+### 变元是操作码中一部分
+
+```
+leap macro cond, lab
+	j&cond lab
+     endm
+```
+
+```
+leap z, there	宏展开:	jz, there
+
+leap nz, here	宏展开： jnz, here
+```
 
 
 
