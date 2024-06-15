@@ -1,16 +1,26 @@
 ;音符和发音频率的对应关系
 assume cs:code, ds:data,ss:stack
 data segment
-    mus_freq dw 262,262,262,196
-             dw 330,330,330,262
-             dw 262,330,392,392
-             dw 349,330,294
-             dw 294,330,349,349
-             dw 330,294,330,262
-             dw 262,330,294,196
-             dw 247,294,262,-1
-    mus_time dw 3 dup(12,12,25,25),12,12,50
-             dw 3 dup(12,12,25,25),12,12,50
+    ;新年好
+    mus_freq  dw 262,262,262,196
+              dw 330,330,330,262
+              dw 262,330,392,392
+              dw 349,330,294
+              dw 294,330,349,349
+              dw 330,294,330,262
+              dw 262,330,294,196
+              dw 247,294,262,-1
+    mus_time  dw 3 dup(12,12,25,25),12,12,50
+              dw 3 dup(12,12,25,25),12,12,50
+
+    ;九儿
+    mus_freq2 dw 440,587,587,523,494,440,392
+              dw 440,294
+              dw 440,587,587,523,494,392,440,492,440,-1
+    mus_time2 dw 25,50,25,25,25,25,25
+              dw 50,150
+              dw 25,50,25,25,25,12,12,50,175
+
 data ends
 stack segment
           db 100h dup(0)
@@ -22,8 +32,8 @@ code segment
              mov  sp, 100h
              mov  ax, data
              mov  ds, ax
-             lea  si, mus_freq     ;lea
-             lea  di, mus_time
+             lea  si, mus_freq2     ;lea
+             lea  di, mus_time2
     play:    
              mov  dx, [si]
              cmp  dx, -1

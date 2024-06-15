@@ -978,6 +978,9 @@ data ends
 ## 磁盘读写
 
 
+## lea
+
+> 语Load effective address——取有效地址，也就是取偏移地址
 
 
 
